@@ -57,6 +57,11 @@ create_users_table()
 
 # Fetching form info and adding users to database
 @app.route('/')
+@app.route('/user')
+def user():
+    return render_template("index.html")
+
+
 @app.route('/add/', methods=['POST', 'GET'])
 def add_users():
     if request.method == 'POST':
