@@ -1,9 +1,8 @@
 import sqlite3
 from flask import Flask, request, jsonify
 from flask_mail import Mail, Message
-from flask import render_template
-from flask_cors import CORS
 
+from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
@@ -11,8 +10,8 @@ CORS(app)
 # configuration of mail
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
-app.config['MAIL_USERNAME'] = 'flavoursomefreshfood76@gmail.com'
-app.config['MAIL_PASSWORD'] = 'Sakheflavoursome'
+app.config['MAIL_USERNAME'] = 'momozamihlali@gmail.com'
+app.config['MAIL_PASSWORD'] = 'khazimla'
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 mail = Mail(app)
@@ -57,11 +56,6 @@ create_users_table()
 
 # Fetching form info and adding users to database
 @app.route('/')
-@app.route('/user')
-def user():
-    return render_template("index.html")
-
-
 @app.route('/add/', methods=['POST', 'GET'])
 def add_users():
     if request.method == 'POST':
@@ -89,13 +83,13 @@ def add_users():
                         "INSERT INTO users (fullname, email_address, phone, Adults, Children ,Checkin ,Checkout , DISH ,ANYTHINGELSE) VALUES (?, ?, ?, ?, ?,?,?,?,?)",
                         (fullname, email_address, phone, Adults, Children, Checkin, Checkout, DISH, ANYTHINGELSE))
                     con.commit()
-                    msg = fullname + " you have been successfully booked please check your email."
+                    msg = fullname + " was added to the databases"
                     row_id = cursor.lastrowid
-                    cancelattion_link = "{link}".format(
-                        link="https://polar-woodland-30328.herokuapp.com//delete/" + str(row_id) + "/")
-                    send_mail(fullname, email_address, phone, Adults, Children, Checkin, Checkout, DISH, cancelattion_link)
+                    cancelattion_link = "<a href='{link}'>link</a>".format(
+                        link="http://127.0.0.1:5000/delete/" + str(row_id) + "/")
+                    send_mail(fullname, email_address, Adults, Children, Checkin, Checkout, DISH, cancelattion_link)
 
-                    return render_template("return.html")
+                    return jsonify(msg)
         except Exception as e:
             # con.rollback()
             msg = "Error occured in insert " + str(e)
@@ -104,11 +98,11 @@ def add_users():
         #     # con.close()
         # return jsonify(msg=msg)
 
-    #     finally:
-    #
-    #         con.close()
-    #     return jsonify(msg=msg)
-    # return render_template('return.html')
+        finally:
+
+            con.close()
+        return jsonify(msg=msg)
+
 
 @app.route('/show-bookers/', methods=['GET'])
 def show_bookers():
@@ -133,63 +127,36 @@ def show_bookers():
 def index():
     msg = Message(
         "Hello Jason",
-        sender='flavoursomefreshfood76@gmail.com',
-        recipients=['flavoursomefreshfood76@gmail.com']
+        sender='momozamihlali@gmail.com',
+        recipients=['momozamihlali@gmail.com']
     )
     msg.body = 'Hello Flask message sent from Flask-Mail'
     mail.send(msg)
     return 'Sent'
 
 
-def send_mail(fullname, email_address, phone, Adults, Children, Checkin, Checkout, DISH, cancellation_link):
+def send_mail(fullname, email_address, Adults, Children, Checkin, Checkout, DISH, cancellation_link):
     msg = Message(
         "Confirmation of booking",
         sender=email_address,
         recipients=[email_address]
     )
     msg.body = """
+        Hello there {fullname},
 
-Hi {fullname},
-We are glad to hear that you are booking a table at Flavoursome for {no_adults} adults and {children} children 
-on {checkin} :{checkout} it is has been confirmed. For any changes please contact our customer service landline at 06670742917 .
+        We are glad to hear that you are booking a table at Flavoursome for {no_adults} adults and {children} children on {checkin} :{checkout}
 
-                                           Your Reservation:
-                                           Name: {fullname}
-                                           Phone Number: {phone}
-                                           Email: {email}
-                                           Booking Date: {checkin}
-                                           Meal :{food}
+        Your mouth watering {food} is ready for you.
 
-We look forward to serving you, please don’t hesitate to contact us for any questions or
-concerns. If you want to cancel your reservation you can click this link {link} or call our reservation team at +276670742917 
-or email us back.
+        For further information we'll contact you shortly at your email address : {email}
 
-You can put any extra information such as events, special offers, and deals as
-well as linking to your social media on our website.
+        we can't wait to see you !!
+
+        however if you want to cancel your reservation you can {link} here  or call our reservation team +27730877365
 
 
-                                           Terms and Conditions 
-                            
-We are putting the following measures in place to ensure the safety of our staff and customers.
-You will be required to wear a face covering when not eating or drinking at your table.
-Your table may be released if you are running more than 20 minutes late.
-Please do not enter the site if you or your guests are experiencing any COVID-19 symptoms.
-
-All the best,
-Sakhe Silwana
-Customer Service
-Manager of Flavoursomefreshfood
-
-    
-    """.format(fullname=fullname, phone=phone, email=email_address, no_adults=Adults, children=Children, checkin=Checkin,
+    """.format(fullname=fullname, email=email_address, no_adults=Adults, children=Children, checkin=Checkin,
                checkout=Checkout, food=DISH, link=cancellation_link)
-
-    with app.open_resource("/home/mihlali/Downloads/lauriam.jpg") as fp:
-        msg.attach("lauriam.jpg", "image/jpg", fp.read())
-
-    with app.open_resource("/home/mihlali/Downloads/Flavoursome.jpg") as fp:
-        msg.attach("Flavoursome.jpg", "image/jpg", fp.read())
-
     mail.send(msg)
 
 
@@ -201,13 +168,13 @@ def delete_user(user_id):
             cur = con.cursor()
             cur.execute("DELETE FROM users WHERE id=" + str(user_id))
             con.commit()
-            msg = "Your reservation has been cancelled."
+            msg = "A record was deleted successfully from the database."
     except Exception as e:
         con.rollback()
         msg = "Error occurred when deleting the user in the database: " + str(e)
     finally:
         con.close()
-        return render_template('delete.html')
+        return jsonify(msg=msg)
 
 
 if __name__ == '__main__':
