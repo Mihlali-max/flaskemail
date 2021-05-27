@@ -87,7 +87,7 @@ def add_users():
                     msg = fullname + " you have been successfully booked please check your email."
                     row_id = cursor.lastrowid
                     cancelattion_link = "{link}".format(
-                        link="http://127.0.0.1:5000/delete/" + str(row_id) + "/")
+                        link="https://polar-woodland-30328.herokuapp.com//delete/" + str(row_id) + "/")
                     send_mail(fullname, email_address, phone, Adults, Children, Checkin, Checkout, DISH, cancelattion_link)
 
                     return render_template("return.html")
@@ -99,11 +99,11 @@ def add_users():
         #     # con.close()
         # return jsonify(msg=msg)
 
-        finally:
-
-            con.close()
-        return jsonify(msg=msg)
-    return render_template('return.html')
+    #     finally:
+    #
+    #         con.close()
+    #     return jsonify(msg=msg)
+    # return render_template('return.html')
 
 @app.route('/show-bookers/', methods=['GET'])
 def show_bookers():
