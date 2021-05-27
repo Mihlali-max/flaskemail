@@ -1,7 +1,7 @@
 import sqlite3
 from flask import Flask, request, jsonify
 from flask_mail import Mail, Message
-
+from flask import render_template
 from flask_cors import CORS
 
 
@@ -90,7 +90,7 @@ def add_users():
                         link="http://127.0.0.1:5000/delete/" + str(row_id) + "/")
                     send_mail(fullname, email_address, phone, Adults, Children, Checkin, Checkout, DISH, cancelattion_link)
 
-                    return jsonify(msg)
+                    return render_template("return.html")
         except Exception as e:
             # con.rollback()
             msg = "Error occured in insert " + str(e)
@@ -103,7 +103,7 @@ def add_users():
 
             con.close()
         return jsonify(msg=msg)
-
+    return render_template('return.html')
 
 @app.route('/show-bookers/', methods=['GET'])
 def show_bookers():
@@ -146,7 +146,7 @@ def send_mail(fullname, email_address, phone, Adults, Children, Checkin, Checkou
 
 Hi {fullname},
 We are glad to hear that you are booking a table at Flavoursome for {no_adults} adults and {children} children 
-on {checkin} :{checkout} is confirmed. For any changes please call 06670742917 .
+on {checkin} :{checkout} it is has been confirmed. For any changes please contact our customer service landline at 06670742917 .
 
                                            Your Reservation:
                                            Name: {fullname}
@@ -159,12 +159,20 @@ We look forward to serving you, please don’t hesitate to contact us for any qu
 concerns. If you want to cancel your reservation you can click this link {link} or call our reservation team at +276670742917 
 or email us back.
 
-Here is where you can put any extra information such as events, special offers, and deals as
-well as linking to your social media.
+You can put any extra information such as events, special offers, and deals as
+well as linking to your social media on our website.
+
+
+                                           Terms and Conditions 
+                            
+We are putting the following measures in place to ensure the safety of our staff and customers.
+You will be required to wear a face covering when not eating or drinking at your table.
+Your table may be released if you are running more than 20 minutes late.
+Please do not enter the site if you or your guests are experiencing any COVID-19 symptoms.
 
 All the best,
 Sakhe Silwana
-
+Customer Service
 Manager of Flavoursomefreshfood
 
     
@@ -194,7 +202,7 @@ def delete_user(user_id):
         msg = "Error occurred when deleting the user in the database: " + str(e)
     finally:
         con.close()
-        return jsonify(msg=msg)
+        return render_template('delete.html')
 
 
 if __name__ == '__main__':
