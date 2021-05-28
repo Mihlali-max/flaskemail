@@ -86,7 +86,7 @@ def add_users():
                     msg = fullname + " was added to the databases"
                     row_id = cursor.lastrowid
                     cancelattion_link = "<a href='{link}'>link</a>".format(
-                        link="https://polar-woodland-30328.herokuapp.com//delete/" + str(row_id) + "/")
+                        link="http://127.0.0.1:5000/delete/" + str(row_id) + "/")
                     send_mail(fullname, email_address, Adults, Children, Checkin, Checkout, DISH, cancelattion_link)
 
                     return jsonify(msg)
